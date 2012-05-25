@@ -1,0 +1,26 @@
+
+Config
+	--{ font = "-*-Fixed-\bold-R-Normal-*-13-*-*-*-*-*-*-*"
+	{ font = "-*-Terminus-\bold-R-Normal-*-13-*-*-*-*-*-*-*"
+	, bgColor = "black"
+	, fgColor = "grey"
+	-- bota a barra no canto superior esquerdo, ocupando 100% da largura da tela
+	, position = TopW L 100
+	, commands = 
+			--[ Run Cpu ["-L", "3", "-H", "50", "--normal", "green", "--high", "red"] 10
+		[ Run MultiCpu ["-t","Cpu: <autototal>","-L", "3", "-H", "50", "--normal", "green", "--high", "red"] 8
+		, Run Memory ["-t", "Mem: <usedratio>%"] 10
+		, Run Swap [] 15
+		, Run Date "%a %b %_d %l:%M" "date" 10
+		, Run Network "eth0" ["-L","0","-H","1000","--normal","green","--high","red"] 10
+		, Run Network "wlan0" ["-L","0","-H","100","--normal","green","--high","red"] 10
+		, Run StdinReader
+		, Run CommandReader "/usr/bin/ledmon" "LED"
+		, Run Battery ["-t","Batt: <left>% / <timeleft>","-L","15","-H","95","--low","red","--normal","yellow","--high","green", "--", "-c", "energy_full"] 30
+        --, Run BatteryP ["-t", "Batt: <left>%"] ["BAT1"] 30
+        --, Run Battery ["--", "-c", "energy_full"] 30
+		]
+	, sepChar = "%"
+	, alignSep = "}{"
+	, template = "%StdinReader% }{ %eth0% - %wlan0%    %multicpu% | %memory% * %swap%    <fc=#ffff00>%battery%</fc>  <fc=#ee9a00>%date%</fc> "
+	}

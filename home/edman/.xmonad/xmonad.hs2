@@ -1,0 +1,82 @@
+
+import XMonad
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageDocks
+import XMonad.Util.Run(spawnPipe)
+import XMonad.Util.EZConfig(additionalKeys)
+import System.IO
+
+import qualified XMonad.StackSet as W
+import qualified Data.Map		 as M
+
+
+-- the preferred terminal program
+myTerminal = "urxvt"
+-- largura da borda das janelas
+myBorderWidth = 2
+-- seleciona a modkey como a tecla super (windows)
+myModMask = mod4Mask 
+-- quantidade e nome dos workspaces
+myWorkspaces = ["1","2","3","4","5","6","7","8","9"]
+-- cor das bordas de janelas (normal e em foco)
+myNormalBorderColor  = "#dddddd"
+myFocusedBorderColor = "#ff0000"
+
+-- configuracao dos layouts disponiveis
+myLayout = avoidStruts(tiled ||| Mirror tiled ||| Full) ||| Full
+	where
+		-- algoritmo de tiling padrao
+		tiled = Tall nmaster delta ratio
+		-- numero padrao de janelas no painel mestre
+		nmaster = 1
+		-- proporcao padrao da janela ocupada pelo painel mestre
+		ratio = 1/2
+		-- porcentagem da janela a se incrementar no ajuste de tamanho do painel
+		delta = 3/100
+
+-- determina que o foco da janela siga o ponteiro do mouse
+myFocusFollowsMouse :: Bool
+myFocusFollowsMouse = True
+
+
+myManageHook = manageDocks <+> manageHook defaultConfig
+--myLogHook = dynamicLogWithPP xmobarPP
+--		{ ppOutput = hPutStrLn xmproc
+--		, ppTitle = xmobarColor "green" "" . shorten 50
+--		}
+
+main = do
+	xmproc <- spawnPipe "/usr/bin/xmobar /home/edman/.xmobarrc"
+	xmonad $ defaultConfig {
+		-- simples stuff
+		terminal           = myTerminal,
+		focusFollowsMouse  = myFocusFollowsMouse,
+		borderWidth        = myBorderWidth,
+		modMask            = myModMask,
+		workspaces         = myWorkspaces,
+		normalBorderColor  = myNormalBorderColor,
+		focusedBorderColor = myFocusedBorderColor,
+		--numlockMask        = myNumlockMask,
+						  
+		-- key bindings
+		--keys               = myKeys,
+		--mouseBindings      = myMouseBindings,
+						
+		-- hooks, layouts
+		--manageHook = manageDocks <+> manageHook defaultConfig,
+		manageHook = myManageHook,
+		logHook = dynamicLogWithPP xmobarPP
+				{ ppOutput = hPutStrLn xmproc
+				, ppTitle = xmobarColor "green" "" . shorten 50
+				},
+
+		--manageHook         = myManageHook,
+		--logHook            = myLogHook,
+		--startupHook        = myStartupHook
+		layoutHook         = myLayout
+	}
+
+-- executa o xterm com cores invertidas e com fonte diferente
+--myTerminalConfig = "xterm -r -font -*-Terminus-medium-r-normal-*-*-*-*-*-*-*-*-*"
+--myTerminalConfig = "xterm -r"
+
